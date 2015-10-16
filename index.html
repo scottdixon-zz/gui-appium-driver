@@ -1,0 +1,39 @@
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>GUI Tests</title>
+  </head>
+  <body>
+    
+    <div id="desired">
+      <select name="desiredCapabilities[browserName]">
+        <option>Safari</option>
+      </select>
+      <select name="desiredCapabilities[deviceName]">
+        <option>iPhone 6</option>
+      </select>
+      <select name="desiredCapabilities[platformVersion]">
+        <option>9.0</option>
+      </select>
+      <select name="desiredCapabilities[platformName]">
+        <option>iOS</option>
+      </select>
+    </div>
+
+    <input type="button" value="New Session" id="new-session"/>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+
+    <script>
+    var sessionId;
+    $(function(){
+      $("#new-session").click(function(){
+        $.post('http://localhost:4723/wd/hub/session', $("#desired select").serialize(), function(result){
+          sessionId = result.sessionId;
+        });
+      })
+    })
+    </script>
+
+  </body>
+</html>
