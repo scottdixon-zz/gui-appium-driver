@@ -7,33 +7,94 @@
   <body>
     
     <div id="desired">
-      <select name="desiredCapabilities[browserName]">
-        <option>Safari</option>
+      <select name="desiredCapabilities[app]">
+        <option>Hello World.app</option>
+        <option>Hello World's.app</option>
+
       </select>
       <select name="desiredCapabilities[deviceName]">
-        <option>iPhone 6</option>
+        <option>iPhone 5</option>
       </select>
       <select name="desiredCapabilities[platformVersion]">
         <option>9.0</option>
+        <option>8.4</option>
+
       </select>
       <select name="desiredCapabilities[platformName]">
         <option>iOS</option>
       </select>
+      <select name="desiredCapabilities[timeout]">
+        <option>1000</option>
+      </select>
+      <input type="button" value="New Session" id="new-session"/>
+    </div>
+    <hr>
+    <div>
+      <p>Find:</p>
+      <input type="text" name="using" value="xpath">
+      <input type="text" name="value" value="*">
+      <input type="button" value="Find Elements" id="find-elements"/>
     </div>
 
-    <input type="button" value="New Session" id="new-session"/>
+    <div>
+      <p>Attribute:</p>
+      <input type="text" name="id" value="217">
+      <input type="text" name="attribute" value="value">
+      <input type="button" value="Get Element" id="get-element-attribute"/>
+    </div>
+
+    <div>
+      <p>Contexts:</p>
+      <input type="button" value="Get Element" id="get-contexts"/>
+    </div>
+
+    <div>
+      <p>Background App:</p>
+      <input type="text" name="seconds" value="10"> seconds
+      <input type="button" value="Background App" id="background-app"/>
+    </div>
+
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
 
     <script>
     var sessionId;
     $(function(){
+      // Is there an existing session?
+      $.get('http://localhost:4723/wd/hub/sessions', function(result){
+        sessionId = result.value[0].id;
+        console.log('Using existing session: ' + sessionId);
+      });
+
       $("#new-session").click(function(){
         $.post('http://localhost:4723/wd/hub/session', $("#desired select").serialize(), function(result){
           sessionId = result.sessionId;
+          console.log('Set session ID to ' + sessionId);
         });
       })
+      $("#find-elements").click(function(){
+        $.post('http://localhost:4723/wd/hub/session/' + sessionId + '/elements', { using: $('input[name=using]').val(), value: $('input[name=value]').val() }, function(result){
+          console.log(result);
+        });
+      })
+      $("#background-app").click(function(){
+        $.post('http://localhost:4723/wd/hub/session/' + sessionId + '/appium/app/background', { seconds: $('input[name=seconds]').val() }, function(result){
+          console.log(result);
+        });
+      })
+      $("#get-element-attribute").click(function(){
+        $.get('http://localhost:4723/wd/hub/session/' + sessionId + '/element/' + $('input[name=id]').val() + '/' + $('input[name=attribute]').val(), function(result){
+          console.log(result);
+        });
+      })
+      $("#get-contexts").click(function(){
+        $.get('http://localhost:4723/wd/hub/session/' + sessionId + '/contexts', function(result){
+          console.log(result);
+        });
+      })
+
     })
     </script>
+
 
   </body>
 </html>
